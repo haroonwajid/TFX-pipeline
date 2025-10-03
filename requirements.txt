@@ -1,0 +1,17 @@
+tfx==1.14.0
+tensorflow==2.14.1
+tensorflow-transform==1.14.0
+tensorflow-data-validation==1.14.0
+tensorflow-model-analysis==0.44.0
+apache-beam[gcp]==2.50.0
+ml-metadata==1.14.0
+protobuf==3.20.3
+pandas==1.5.3
+numpy==1.24.4
+scikit-learn==1.2.2
+pyarrow==12.0.1
+tensorflow-serving-api==2.14.1
+absl-py==1.4.0
+tqdm==4.66.1
+jinja2==3.1.2
+keras-tuner==1.4.6

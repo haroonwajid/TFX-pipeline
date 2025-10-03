@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Lint (flake8 minimal)
+        run: |
+          pip install flake8
+          flake8 --ignore=E501 . || true
+
+      - name: Sanity import tests
+        run: |
+          python - << 'PY'
+          import importlib
+          for m in [
+            'pipeline.config',
+            'modules.preprocessing',
+            'modules.schema',
+            'modules.model',
+            'modules.tuner',
+            'modules.trainer',
+            'modules.evaluator',
+          ]:
+              importlib.import_module(m)
+              print('Imported', m)
+          PY
+
+      - name: Build pipeline object
+        run: |
+          python - << 'PY'
+          from pipeline.pipeline import create_pipeline
+          p = create_pipeline()
+          print('Components:', [c.id for c in p.components])
+          PY
